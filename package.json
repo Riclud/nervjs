@@ -1,13 +1,13 @@
 {
   "name": "nervjs",
   "scripts": {
-    "start": "./scripts/start.sh ./src/main.ts",
-    "dev": "./scripts/start.sh --watch ./src/main.ts",
+    "start": "./scripts/start.sh ./scripts/cli.ts build && ./scripts/start.sh ./src/main.ts",
+    "dev": "./scripts/start.sh ./scripts/cli.ts build && ./scripts/start.sh --watch ./src/main.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "nerv": "bun ./scripts/cli.ts",
-    "nerv:build": "bun ./scripts/cli.ts build",
-    "nerv:watch": "bun ./scripts/cli.ts watch"
+    "nerv": "./scripts/start.sh ./scripts/cli.ts",
+    "nerv:build": "./scripts/start.sh ./scripts/cli.ts build",
+    "nerv:watch": "./scripts/start.sh ./scripts/cli.ts watch"
   },
   "type": "module",
   "private": true,

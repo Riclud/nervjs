@@ -12,7 +12,7 @@ case "$npm_config_user_agent" in
     exec bun $WATCH "$@"
     ;;
   deno/*)
-    exec deno $WATCH run --allow-net "$@"
+    exec deno $WATCH run --allow-net --allow-read --allow-write "$@"
     ;;
   *)
     exec node $WATCH "$@"
