@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { NervFactory } from './factory.ts'
 import { createRouteFactory } from './router/factory.ts'
-import { runtimeName } from './server/detect.ts'
 
 const container = {}
 
@@ -17,5 +16,4 @@ const routes = [
 ]
 
 const app = NervFactory.create({ routes, container })
-const server = await app.listen(3000)
-console.log(`nervjs listening on http://${server.hostname}:${server.port} (${runtimeName()})`)
+await app.listen(3000)

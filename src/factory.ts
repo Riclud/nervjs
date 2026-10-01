@@ -3,6 +3,8 @@ import { compileRoutes } from './router/compile.ts'
 import type { Route } from './router/factory.ts'
 import { buildOpenApi } from './openapi.ts'
 import { jsonResponse } from './core/errors.ts'
+import { printListening, printRoutes } from './logger.ts'
+import { runtimeName } from './server/detect.ts'
 
 export type FetchHandler = (req: Request) => Response | Promise<Response>
 
@@ -17,6 +19,7 @@ export interface AppOptions {
   routes: Route[]
   container: unknown
   openapi?: OpenApiOptions | boolean
+  logging?: boolean
 }
 
 export interface NervApplication {
@@ -50,6 +53,7 @@ export const NervFactory = {
         }
         routes = [docRoute, ...args.routes]
       }
+      if (args.logging !== false) printRoutes(routes)
       fetch = compileRoutes(routes, args.container)
     }
 
@@ -57,6 +61,9 @@ export const NervFactory = {
       fetch,
       listen: async (port, hostname) => {
         running = await createServer({ port, hostname, fetch })
+        if (typeof args !== 'function' && args.logging !== false) {
+          printListening(running, runtimeName())
+        }
         return running
       },
       close: async () => {
