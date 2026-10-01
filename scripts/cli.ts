@@ -107,6 +107,17 @@ const hasRoutesExport = (content: string): boolean => {
   })
 }
 
+const hasConfigExport = (content: string): boolean => {
+  const source = ts.createSourceFile('config.ts', content, ts.ScriptTarget.Latest, true)
+  return source.statements.some((stmt) => {
+    if (!ts.isVariableStatement(stmt)) return false
+    const exported = ts.getModifiers(stmt)?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)
+    if (!exported) return false
+    const decl = stmt.declarationList.declarations[0]
+    return !!decl && ts.isIdentifier(decl.name) && decl.name.text === 'config'
+  })
+}
+
 const toPlatformPath = (path: string): string => path.split('\\').join('/')
 
 const generate = (dir: string, out: string): string[] => {
@@ -140,6 +151,12 @@ const generateContainer = (dir: string, out: string): { lines: string[]; count: 
     lines.push(`import { ${names.join(', ')} } from '${toPlatformPath(relative(out, file))}'`)
   }
 
+  const configFile = join(dir, 'config.ts')
+  const hasConfig = existsSync(configFile) && hasConfigExport(readFileSync(configFile, 'utf8'))
+  if (hasConfig) {
+    lines.push(`import { config } from '${toPlatformPath(relative(out, configFile))}'`)
+  }
+
   const contextFile = join(dir, 'context.ts')
   const hasState = existsSync(contextFile)
   if (hasState) {
@@ -158,9 +175,9 @@ const generateContainer = (dir: string, out: string): { lines: string[]; count: 
     lines.push(`  return { ${classes.map((c) => c.key).join(', ')} }`)
     lines.push('}')
     lines.push('')
-    lines.push('export const container = buildContainer()')
+    lines.push(`export const container = ${hasConfig ? `{ ...buildContainer(), config }` : 'buildContainer()'}`)
   } else {
-    lines.push('export const container = {}')
+    lines.push(`export const container = ${hasConfig ? '{ config }' : '{}'}`)
   }
   lines.push('')
   lines.push('export type AppDeps = typeof container')
