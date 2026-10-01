@@ -6,6 +6,9 @@ out
 dist
 *.tgz
 
+# codegen
+.nerv
+
 # code coverage
 coverage
 *.lcov

@@ -4,7 +4,10 @@
     "start": "./scripts/start.sh ./src/main.ts",
     "dev": "./scripts/start.sh --watch ./src/main.ts",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "nerv": "bun ./scripts/cli.ts",
+    "nerv:build": "bun ./scripts/cli.ts build",
+    "nerv:watch": "bun ./scripts/cli.ts watch"
   },
   "type": "module",
   "private": true,
