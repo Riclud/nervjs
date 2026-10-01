@@ -61,6 +61,39 @@ const exportedClasses = (content: string): { name: string; deps: string[] }[] =>
 
 const classKey = (name: string): string => (name ? name[0]!.toLowerCase() + name.slice(1) : name)
 
+const collectClasses = (dir: string): ClassInfo[] =>
+  existsSync(dir)
+    ? walk(dir, '.service.ts').flatMap((file) =>
+        exportedClasses(readFileSync(file, 'utf8')).map(({ name, deps }) => ({
+          name,
+          key: classKey(name),
+          deps,
+          file,
+        })),
+      )
+    : []
+
+const sortClasses = (classes: ClassInfo[]): ClassInfo[] => {
+  const byName = new Map(classes.map((c) => [c.name, c]))
+  const state = new Map<string, 0 | 1>()
+  const order: ClassInfo[] = []
+
+  const visit = (name: string, trail: string[]): void => {
+    const cls = byName.get(name)
+    if (!cls) throw new Error(`nerv: unknown dependency "${name}"`)
+    const s = state.get(name)
+    if (s === 1) return
+    if (s === 0) throw new Error(`nerv: circular dependency: ${[...trail, name].join(' → ')}`)
+    state.set(name, 0)
+    for (const dep of cls.deps) visit(dep, [...trail, name])
+    state.set(name, 1)
+    order.push(cls)
+  }
+
+  for (const cls of classes) visit(cls.name, [])
+  return order
+}
+
 const hasRoutesExport = (content: string): boolean => {
   const source = ts.createSourceFile('routes.ts', content, ts.ScriptTarget.Latest, true)
   return source.statements.some((stmt) => {
