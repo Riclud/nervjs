@@ -3,7 +3,7 @@ import { compileRoutes } from './router/compile.ts'
 import type { Route } from './router/factory.ts'
 import { buildOpenApi } from './openapi.ts'
 import { jsonResponse } from './core/errors.ts'
-import { printListening, printRoutes } from './logger.ts'
+import { clearScreen, printListening, printRoutes } from './logger.ts'
 import { runtimeName } from './server/detect.ts'
 
 export type FetchHandler = (req: Request) => Response | Promise<Response>
@@ -32,12 +32,12 @@ export const NervFactory = {
   create: (args: AppOptions | FetchHandler): NervApplication => {
     let running: StartedServer | undefined
     let fetch: FetchHandler
+    const routes: Route[] = []
 
     if (typeof args === 'function') {
       fetch = args
     } else {
       const openapi = args.openapi ?? true
-      let routes = args.routes
       if (openapi) {
         const opts: OpenApiOptions = openapi === true ? {} : openapi
         const spec = buildOpenApi(args.routes, {
@@ -51,9 +51,9 @@ export const NervFactory = {
           schema: {},
           handler: () => jsonResponse(200, spec),
         }
-        routes = [docRoute, ...args.routes]
+        routes.push(docRoute)
       }
-      if (args.logging !== false) printRoutes(routes)
+      routes.push(...args.routes)
       fetch = compileRoutes(routes, args.container)
     }
 
@@ -62,6 +62,8 @@ export const NervFactory = {
       listen: async (port, hostname) => {
         running = await createServer({ port, hostname, fetch })
         if (typeof args !== 'function' && args.logging !== false) {
+          clearScreen()
+          printRoutes(routes)
           printListening(running, runtimeName())
         }
         return running

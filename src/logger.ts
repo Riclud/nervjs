@@ -27,6 +27,10 @@ const methodColor: Record<string, (text: string) => string> = {
 
 const methodWidth = Math.max(...Object.keys(methodColor).map((m) => m.length))
 
+export const clearScreen = (): void => {
+  if (useColor) process.stdout.write('\u001b[2J\u001b[3J\u001b[H')
+}
+
 export const printRoutes = (routes: Route[]): void => {
   for (const route of routes) {
     const colorFn = methodColor[route.method] ?? ((text: string) => text)
