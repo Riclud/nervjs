@@ -11,6 +11,9 @@ case "$npm_config_user_agent" in
   bun/*)
     exec bun $WATCH "$@"
     ;;
+  deno/*)
+    exec deno $WATCH run --allow-net "$@"
+    ;;
   *)
     exec node $WATCH "$@"
     ;;
