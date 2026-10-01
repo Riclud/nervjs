@@ -63,14 +63,16 @@ const classKey = (name: string): string => (name ? name[0]!.toLowerCase() + name
 
 const collectClasses = (dir: string): ClassInfo[] =>
   existsSync(dir)
-    ? walk(dir, '.service.ts').flatMap((file) =>
-        exportedClasses(readFileSync(file, 'utf8')).map(({ name, deps }) => ({
-          name,
-          key: classKey(name),
-          deps,
-          file,
-        })),
-      )
+    ? walk(dir, '.ts')
+        .filter((file) => !file.endsWith('.routes.ts'))
+        .flatMap((file) =>
+          exportedClasses(readFileSync(file, 'utf8')).map(({ name, deps }) => ({
+            name,
+            key: classKey(name),
+            deps,
+            file,
+          })),
+        )
     : []
 
 const sortClasses = (classes: ClassInfo[]): ClassInfo[] => {
