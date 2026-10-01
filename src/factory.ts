@@ -1,6 +1,13 @@
 import { createServer, type StartedServer } from './server/index.ts'
+import { compileRoutes } from './router/compile.ts'
+import type { Route } from './router/factory.ts'
 
 export type FetchHandler = (req: Request) => Response | Promise<Response>
+
+export interface AppOptions {
+  routes: Route[]
+  container: unknown
+}
 
 export interface NervApplication {
   fetch: FetchHandler
@@ -9,7 +16,8 @@ export interface NervApplication {
 }
 
 export const NervFactory = {
-  create: (fetch: FetchHandler): NervApplication => {
+  create: (args: AppOptions | FetchHandler): NervApplication => {
+    const fetch: FetchHandler = typeof args === 'function' ? args : compileRoutes(args.routes, args.container)
     let running: StartedServer | undefined
 
     return {

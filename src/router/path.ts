@@ -13,8 +13,9 @@ export interface CompiledPath {
 
 export const compilePath = (path: string): CompiledPath => {
   const keys: string[] = []
+  const normalized = path.startsWith('/') ? path : `/${path}`
   const pattern = new RegExp(
-    `^${path
+    `^${normalized
       .split('/')
       .map((seg) => (seg.startsWith(':') ? (keys.push(seg.slice(1)), '([^/]+)') : seg))
       .join('/')}/?$`,
