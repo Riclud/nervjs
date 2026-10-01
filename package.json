@@ -1,0 +1,15 @@
+{
+  "name": "nervjs",
+  "scripts": {
+    "start": "bun ./src/main.ts",
+    "dev": "bun --watch ./src/main.ts"
+  },
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
