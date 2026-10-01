@@ -12,7 +12,7 @@ const adapters: Record<string, HttpAdapter> = {
   deno: denoAdapter,
 }
 
-export async function createServer(options: CreateServerOptions): Promise<StartedServer> {
+export const createServer = async (options: CreateServerOptions): Promise<StartedServer> => {
   const runtime = isBun ? 'bun' : isDeno ? 'deno' : 'node'
   return adapters[runtime]!.create(options)
 }

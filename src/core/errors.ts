@@ -14,25 +14,20 @@ export class HttpError extends Error {
     this.status = status
   }
 
-  toResponse(): Response {
-    return jsonResponse(this.status, { error: this.message })
-  }
+  toResponse = (): Response => jsonResponse(this.status, { error: this.message })
 }
 
-export function normalizeIssues(error: ZodError): ValidationIssue[] {
-  return error.issues.map((issue) => ({
+export const normalizeIssues = (error: ZodError): ValidationIssue[] =>
+  error.issues.map((issue) => ({
     path: issue.path.join('.'),
     message: issue.message,
   }))
-}
 
-export function validationResponse(issues: ValidationIssue[]): Response {
-  return jsonResponse(400, { error: 'validation', issues })
-}
+export const validationResponse = (issues: ValidationIssue[]): Response =>
+  jsonResponse(400, { error: 'validation', issues })
 
-export function jsonResponse(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), {
+export const jsonResponse = (status: number, body: unknown): Response =>
+  new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json' },
   })
-}

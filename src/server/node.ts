@@ -9,8 +9,8 @@ const toBody = async (req: IncomingMessage): Promise<Uint8Array> => {
   return Buffer.concat(chunks)
 }
 
-const nodeAdapter: HttpAdapter = {
-  create({ port, hostname = 'localhost', fetch }) {
+export const nodeAdapter: HttpAdapter = {
+  create: ({ port, hostname = 'localhost', fetch }) => {
     return new Promise((resolve, reject) => {
       const server = createServer(async (req, res) => {
         const url = `http://${req.headers.host ?? `${hostname}:${port}`}${req.url ?? '/'}`
@@ -34,5 +34,3 @@ const nodeAdapter: HttpAdapter = {
     })
   },
 }
-
-export { nodeAdapter }

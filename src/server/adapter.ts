@@ -7,9 +7,9 @@ export interface CreateServerOptions {
 export interface StartedServer {
   port: number
   hostname: string
-  stop(): Promise<void>
+  stop: () => Promise<void>
 }
 
 export interface HttpAdapter {
-  create(options: CreateServerOptions): Promise<StartedServer>
+  create: (options: CreateServerOptions) => Promise<StartedServer>
 }
