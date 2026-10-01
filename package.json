@@ -2,12 +2,15 @@
   "name": "nervjs",
   "scripts": {
     "start": "./scripts/start.sh ./src/main.ts",
-    "dev": "./scripts/start.sh --watch ./src/main.ts"
+    "dev": "./scripts/start.sh --watch ./src/main.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prettier": "^3.9.9"
   },
   "peerDependencies": {
     "typescript": "^5"
